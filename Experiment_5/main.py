@@ -1,49 +1,46 @@
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Load the dataset
-file_name = 'sample_dataset.csv'
-data = pd.read_csv(file_name)
+data = pd.read_csv("sample_dataset.csv")
 
-# Display the initial data
-print("Initial Data:")
-print(data.head())
+# 1. Age Distribution
+plt.figure(figsize=(8, 5))
+sns.countplot(x='Age', data=data)
+plt.title('Age Distribution')
+plt.xlabel('Age')
+plt.ylabel('Count')
+plt.xticks(rotation=45)
+plt.show()
 
-# 1. Handling Missing Values
-# Check for missing values
-print("\nMissing Values:")
-print(data.isnull().sum())
+# 2. Score Distribution
+plt.figure(figsize=(8, 5))
+sns.countplot(x='Score', data=data)
+plt.title('Score Distribution')
+plt.xlabel('Score')
+plt.ylabel('Count')
+plt.xticks(rotation=45)
+plt.show()
 
-# Fill missing values only for numeric columns
-numeric_cols = data.select_dtypes(include=['float64', 'int64']).columns
-data[numeric_cols] = data[numeric_cols].fillna(data[numeric_cols].mean())
+# 3. Height Distribution
+plt.figure(figsize=(8, 5))
+sns.histplot(data['Height(cm)'], bins=10, kde=True)
+plt.title('Height Distribution')
+plt.xlabel('Height (cm)')
+plt.ylabel('Frequency')
+plt.show()
 
-# 2. Removing Duplicates
-# Remove duplicate rows
-data.drop_duplicates(inplace=True)
+# 4. Weight Distribution
+plt.figure(figsize=(8, 5))
+sns.histplot(data['Weight(kg)'], bins=10, kde=True)
+plt.title('Weight Distribution')
+plt.xlabel('Weight (kg)')
+plt.ylabel('Frequency')
+plt.show()
 
-# 3. Correcting Inconsistencies
-# Assuming 'Name' is a column that might need standardization
-data['Name'] = data['Name'].str.title()  # Capitalize first letter of each name
-
-# 4. Filtering Outliers
-# Outlier values are data points that significantly differ from the rest of the observations in a dataset.
-if 'Height(cm)' in data.columns:
-    Q1 = data['Height(cm)'].quantile(0.25)
-    Q3 = data['Height(cm)'].quantile(0.75)
-    IQR = Q3 - Q1
-    lower_bound = Q1 - 1.5 * IQR
-    upper_bound = Q3 + 1.5 * IQR
-    data = data[(data['Height(cm)'] >= lower_bound) & (data['Height(cm)'] <= upper_bound)]
-
-# 5. Data Type Conversion
-# Ensure that the 'Age' column is of integer type
-data['Age'] = data['Age'].astype(int)
-
-# Display the cleaned data
-print("\nCleaned Data:")
-print(data.head())
-
-# Export the cleaned dataset
-cleaned_file_name = 'cleaned_sample_dataset.csv'
-data.to_csv(cleaned_file_name, index=False)
-print(f"\nCleaned data exported to {cleaned_file_name}")
+# 5. Correlation Heatmap
+plt.figure(figsize=(8, 5))
+sns.heatmap(data[['Age', 'Height(cm)', 'Weight(kg)', 'Score']].corr(), annot=True, cmap='coolwarm', linewidths=0.5)
+plt.title("Correlation Heatmap")
+plt.show()
